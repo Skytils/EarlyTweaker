@@ -24,13 +24,25 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
 public class EarlyTweakerFinder {
     public static final File earlyTweakersConfigDir = new File("./config/earlytweaker/" + Constants.MC_VERSION);
     public static final File earlyTweakers = new File(earlyTweakersConfigDir, "/tweakers");
 
-    public static void findTweakers() throws IOException {
+    public static void findTweakersFromRegistrants() {
+        ServiceLoader<IEarlyTweakerRegistrant> registrants = ServiceLoader.load(IEarlyTweakerRegistrant.class);
+        for (IEarlyTweakerRegistrant registrant : registrants) {
+            Constants.log.info(String.format("Considering early tweaker registrant: %s", registrant.getClass().getName()));
+            registrant.getEarlyTweakers().forEach(t -> {
+                EarlyTweakerRegistry.registerTweaker(t);
+                Constants.log.info(String.format("Loaded early tweaker from registrant %s: %s", registrant.getClass().getName(), t.getName()));
+            });
+        }
+    }
+
+    public static void findTweakersFromFile() throws IOException {
         if (!earlyTweakers.exists()) {
             earlyTweakers.mkdirs();
             return;

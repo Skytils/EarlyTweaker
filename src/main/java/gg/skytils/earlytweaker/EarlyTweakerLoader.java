@@ -43,11 +43,23 @@ public class EarlyTweakerLoader implements ITweaker {
     public EarlyTweakerLoader() throws Throwable {
         Launch.blackboard.put(LOADED_KEY, true);
         Constants.log.info("Searching for tweak classes");
-        EarlyTweakerFinder.findTweakers();
+        EarlyTweakerFinder.findTweakersFromRegistrants();
+        EarlyTweakerFinder.findTweakersFromFile();
         tweakers = EarlyTweakerRegistry.instantiateTweakers();
     }
 
-    public static void ensureLoaded(Class<? extends IEarlyTweaker> tweakerClass) throws RuntimeException {
+    public static void ensureLoaded(Class<?> sourceClass) {
+        if (!Launch.blackboard.containsKey(LOADED_KEY)) {
+            try {
+                ensureVersion(VERSION, sourceClass);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to extract early tweaker jar", e);
+            }
+            throw new RuntimeException("EarlyTweaker not loaded");
+        }
+    }
+
+    public static void ensureTweakerLoaded(Class<? extends IEarlyTweaker> tweakerClass) throws RuntimeException {
         if (!Launch.blackboard.containsKey(LOADED_KEY)) {
             try {
                 ensureVersion(VERSION, tweakerClass);
