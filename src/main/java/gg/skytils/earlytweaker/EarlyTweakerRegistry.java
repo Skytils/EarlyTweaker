@@ -73,7 +73,9 @@ public class EarlyTweakerRegistry {
 
         @Override
         public int compareTo(EarlyTweakerWrapper o) {
-            return Ints.saturatedCast((long) order - (long) o.order);
+            int ordering = Ints.saturatedCast((long) order - (long) o.order);
+            if (ordering != 0) return ordering;
+            return tweakerClass.getName().compareTo(o.tweakerClass.getName());
         }
     }
 }
