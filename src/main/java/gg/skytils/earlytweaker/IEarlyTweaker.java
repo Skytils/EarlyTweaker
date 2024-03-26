@@ -40,12 +40,12 @@ public interface IEarlyTweaker extends ITweaker {
     }
 
     @Override
-    default String getLaunchTarget() {
-        throw new UnsupportedOperationException("EarlyTweaker should not be the primary tweaker");
+    default String[] getLaunchArguments() {
+        return new String[0];
     }
 
     @Override
-    default String[] getLaunchArguments() {
+    default String getLaunchTarget() {
         throw new UnsupportedOperationException("EarlyTweaker should not be the primary tweaker");
     }
 }

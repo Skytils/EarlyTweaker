@@ -30,6 +30,8 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.jar.*;
 
@@ -170,7 +172,16 @@ public class EarlyTweakerLoader implements ITweaker {
 
     @Override
     public String[] getLaunchArguments() {
-        return new String[0];
+        ArrayList<String> args = new ArrayList<>();
+        tweakers.forEach(tweaker -> {
+            try {
+                Constants.log.info(String.format("Running getLaunchArguments for %s", tweaker.getClass().getName()));
+                args.addAll(Arrays.asList(tweaker.getLaunchArguments()));
+            } catch (Throwable e) {
+                Constants.log.fatal(String.format("Failed to run getLaunchArguments for %s", tweaker.getClass().getName()), e);
+            }
+        });
+        return args.toArray(new String[0]);
     }
 
     @Override
