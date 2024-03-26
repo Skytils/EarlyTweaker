@@ -18,28 +18,18 @@
 
 plugins {
     id("net.kyori.blossom") version "2.1.0"
-    id("gg.essential.loom") version "1.3.12"
-    id("gg.essential.defaults") version "0.3.0"
     idea
     id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.7"
+    java
 }
 
 version = "0.1.0"
 group = "gg.skytils"
 
-loom {
-    silentMojangMappingsLicense()
-    runConfigs {
-        getByName("client") {
-            isIdeConfigGenerated = true
-        }
-        remove(getByName("server"))
-    }
-}
-
 repositories {
     mavenLocal()
     mavenCentral()
+    maven("https://repo.papermc.io/maven-public/")
     maven("https://repo.spongepowered.org/repository/maven-public/")
     maven("https://repo.sk1er.club/repository/maven-public/")
     maven("https://repo.sk1er.club/repository/maven-releases/")
@@ -47,7 +37,10 @@ repositories {
 }
 
 dependencies {
-
+    compileOnly("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9:universal")
+    compileOnly("net.minecraft:launchwrapper:1.12")
+    compileOnly("commons-io:commons-io:2.4")
+    compileOnly("com.google.guava:guava:17.0")
 }
 
 sourceSets {
@@ -67,12 +60,7 @@ sourceSets {
 }
 
 tasks {
-    processResources {
-        dependsOn(compileJava)
-    }
     named<Jar>("jar") {
-        archiveBaseName.set("EarlyTweaker")
-
         manifest {
             attributes(
                 mapOf(
@@ -82,8 +70,6 @@ tasks {
                 )
             )
         }
-
-        enabled = false
     }
     withType<AbstractArchiveTask> {
         isPreserveFileTimestamps = false
