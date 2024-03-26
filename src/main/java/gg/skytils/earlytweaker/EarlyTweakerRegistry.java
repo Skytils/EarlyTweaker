@@ -29,8 +29,9 @@ public class EarlyTweakerRegistry {
     static TreeSet<EarlyTweakerWrapper> tweakers = new TreeSet<>();
 
     public static void registerTweaker(Class<? extends IEarlyTweaker> tweaker) {
-        tweakers.add(new EarlyTweakerWrapper(tweaker));
-        registeredTweakNames.add(tweaker.getName());
+        if (registeredTweakNames.add(tweaker.getName())) {
+            tweakers.add(new EarlyTweakerWrapper(tweaker));
+        }
     }
 
     @Deprecated
