@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +53,7 @@ public class EarlyTweakerLoader implements ITweaker {
         if (!Launch.blackboard.containsKey(LOADED_KEY)) {
             try {
                 ensureVersion(VERSION, sourceClass);
-            } catch (IOException e) {
+            } catch (IOException | URISyntaxException e) {
                 throw new RuntimeException("Failed to extract early tweaker jar", e);
             }
             throw new RuntimeException("EarlyTweaker not loaded");
@@ -63,7 +64,7 @@ public class EarlyTweakerLoader implements ITweaker {
         if (!Launch.blackboard.containsKey(LOADED_KEY)) {
             try {
                 ensureVersion(VERSION, tweakerClass);
-            } catch (IOException e) {
+            } catch (IOException | URISyntaxException e) {
                 throw new RuntimeException("Failed to extract early tweaker jar", e);
             }
             throw new RuntimeException("EarlyTweaker not loaded");
@@ -73,7 +74,7 @@ public class EarlyTweakerLoader implements ITweaker {
         }
     }
 
-    public static void ensureVersion(String version, Class<?> sourceClass) throws IOException {
+    public static void ensureVersion(String version, Class<?> sourceClass) throws IOException, URISyntaxException {
         File coremodsFolder = new File("./mods/", MC_VERSION);
         if (coremodsFolder.exists() || coremodsFolder.mkdirs()) {
             File earlyTweaker = new File(coremodsFolder, "!!!!!!!!!!EarlyTweaker.jar");
@@ -88,7 +89,7 @@ public class EarlyTweakerLoader implements ITweaker {
                     DefaultArtifactVersion target = new DefaultArtifactVersion(version);
                     if (current.compareTo(target) < 0) {
                         Constants.log.info(String.format("Version %s is outdated, extracting new version", locVersion));
-                        extract(new File(sourceClass.getProtectionDomain().getCodeSource().getLocation().getPath()), earlyTweaker);
+                        extract(new File(sourceClass.getProtectionDomain().getCodeSource().getLocation().toURI()), earlyTweaker);
                         try {
                             Class<?> clazz = Class.forName("java.lang.Shutdown");
                             Method m_exit = clazz.getDeclaredMethod("exit", int.class);
@@ -102,7 +103,7 @@ public class EarlyTweakerLoader implements ITweaker {
                 }
             } else {
                 Constants.log.info("No version found, extracting new version");
-                extract(new File(sourceClass.getProtectionDomain().getCodeSource().getLocation().getPath()), earlyTweaker);
+                extract(new File(sourceClass.getProtectionDomain().getCodeSource().getLocation().toURI()), earlyTweaker);
                 throw new RuntimeException("Extracted new version");
             }
         } else throw new RuntimeException("Failed to create coremods folder");
@@ -155,7 +156,7 @@ public class EarlyTweakerLoader implements ITweaker {
                 Files.move(temp, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 Constants.log.info(String.format("Extracted %s to %s", currentLoc, file));
             }
-        } else throw new RuntimeException("Failed to extract early tweaker jar");
+        } else throw new RuntimeException("Failed to extract early tweaker jar: currentLoc is not a file");
     }
 
     @Override
