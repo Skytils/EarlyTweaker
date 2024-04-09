@@ -23,7 +23,7 @@ plugins {
     java
 }
 
-version = "0.2.2"
+version = "0.3.0"
 group = "gg.skytils"
 
 repositories {
