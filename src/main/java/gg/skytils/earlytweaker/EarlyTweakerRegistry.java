@@ -19,8 +19,6 @@
 package gg.skytils.earlytweaker;
 
 import com.google.common.primitives.Ints;
-import net.minecraft.launchwrapper.ITweaker;
-import net.minecraft.launchwrapper.Launch;
 
 import java.util.*;
 
@@ -31,20 +29,6 @@ public class EarlyTweakerRegistry {
     public static void registerTweaker(Class<? extends IEarlyTweaker> tweaker) {
         if (registeredTweakNames.add(tweaker.getName())) {
             tweakers.add(new EarlyTweakerWrapper(tweaker));
-        }
-    }
-
-    @Deprecated
-    public static void injectTweakers() {
-        @SuppressWarnings("unchecked")
-        List<ITweaker> tweaks = (List<ITweaker>) Launch.blackboard.get("Tweaks");
-        for (EarlyTweakerWrapper tweaker : tweakers.descendingSet()) {
-            try {
-                Constants.log.info(String.format("Injecting %s into Blackboard", tweaker.tweakerClass.getName()));
-                tweaks.add(1, tweaker.tweakerClass.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
-                Constants.log.fatal(String.format("Failed to inject early tweaker: %s", tweaker.tweakerClass.getName()), e);
-            }
         }
     }
 

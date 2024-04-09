@@ -46,7 +46,6 @@ public class EarlyTweakerLoader implements ITweaker {
         Launch.blackboard.put(LOADED_KEY, true);
         Constants.log.info("Searching for tweak classes");
         EarlyTweakerFinder.findTweakersFromRegistrants();
-        EarlyTweakerFinder.findTweakersFromFile();
         tweakers = EarlyTweakerRegistry.instantiateTweakers();
     }
 
@@ -70,8 +69,7 @@ public class EarlyTweakerLoader implements ITweaker {
             }
             Utils.makeCrashReport(new RuntimeException("EarlyTweaker not loaded"), "EarlyTweaker not loaded");
         } else if (!EarlyTweakerRegistry.registeredTweakNames.contains(tweakerClass.getName())) {
-            EarlyTweakerFinder.saveTweaker(tweakerClass);
-            Utils.makeCrashReport(new RuntimeException("Saved new tweaker"), "Saved new tweaker");
+            Utils.makeCrashReport(new RuntimeException("Requested EarlyTweaker was not loaded: " + tweakerClass.getName()), "Requested EarlyTweaker was not loaded");
         }
     }
 
