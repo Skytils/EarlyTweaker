@@ -18,6 +18,7 @@
 
 package gg.skytils.earlytweaker;
 
+import gg.skytils.earlytweaker.utils.Utils;
 import net.minecraft.launchwrapper.Launch;
 
 import java.io.File;
@@ -83,7 +84,7 @@ public class EarlyTweakerFinder {
             }
         } catch (IOException e) {
             Constants.log.fatal(String.format("Failed to save %s.", tweakerClass.getName()), e);
-            throw new RuntimeException(e);
+            Utils.makeCrashReport(new RuntimeException(e), "Failed to save %s.");
         }
     }
 }
